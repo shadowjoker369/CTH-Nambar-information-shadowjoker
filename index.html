@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CTH Phone Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(270deg, #000000, #001f1f, #002929, #000000);
+      background-size: 800% 800%;
+      animation: gradientBG 15s ease infinite;
+      color: #00ffcc;
+      text-align: center;
+    }
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .cover {
+      width: 100%;
+      height: 200px;
+      background: url('https://iili.io/FnxNvx1.md.jpg') center/cover no-repeat;
+      border-bottom: 3px solid #00ffcc;
+    }
+    h1 {
+      font-size: 2em;
+      margin-top: 20px;
+      text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+    }
+    input {
+      width: 80%;
+      max-width: 400px;
+      background: #111;
+      color: #00ffcc;
+      border: 1px solid #00ffcc;
+    }
+    button {
+      background-color: #00ffcc;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background: #111;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      display: inline-block;
+      max-width: 90%;
+    }
+    footer {
+      margin-top: 30px;
+      color: #888;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cover"></div>
+
+  <h1>CTH Phone Tracker</h1>
+  <p>Enter any Bangladeshi number (e.g. 017xxxxxxxx or +88017xxxxxxxx)</p>
+  <input type="text" id="phone" placeholder="017xxxxxxx" />
+  <br />
+  <button onclick="trackNumber()">Track Now</button>
+
+  <div class="result" id="output"></div>
+
+  <footer>&copy; Powered by <b>SHADOW JOKER</b></footer>
+
+  <script>
+    async function trackNumber() {
+      const input = document.getElementById('phone').value.trim();
+      const output = document.getElementById('output');
+      output.innerHTML = "Tracking...";
+
+      let phone = input.startsWith("+") ? input : "+88" + input;
+
+      try {
+        const res = await fetch(`/api/lookup?number=${encodeURIComponent(phone)}`);
+        const data = await res.json();
+
+        if (!data.valid) {
+          output.innerHTML = "Invalid Number or Not Found!";
+          return;
+        }
+
+        output.innerHTML = \`
+          <b>Number:</b> \${data.international_format}<br />
+          <b>Country:</b> \${data.country_name} (\${data.country_code})<br />
+          <b>Carrier:</b> \${data.carrier}<br />
+          <b>Line Type:</b> \${data.line_type}<br />
+          <b>Valid:</b> \${data.valid}
+        \`;
+      } catch (error) {
+        output.innerHTML = "Error while fetching data.";
+      }
+    }
+  </script>
+</body>
+</html>
