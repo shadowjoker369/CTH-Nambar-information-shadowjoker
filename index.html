@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
     body {
       margin: 0;
       padding: 0;
@@ -16,22 +17,26 @@
       color: #00ffcc;
       text-align: center;
     }
+
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+
     .cover {
       width: 100%;
       height: 200px;
       background: url('https://iili.io/FnxNvx1.md.jpg') center/cover no-repeat;
       border-bottom: 3px solid #00ffcc;
     }
+
     h1 {
       font-size: 2em;
       margin-top: 20px;
       text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
     }
+
     input, button {
       padding: 10px;
       margin: 10px;
@@ -40,6 +45,7 @@
       border-radius: 5px;
       outline: none;
     }
+
     input {
       width: 80%;
       max-width: 400px;
@@ -47,12 +53,20 @@
       color: #00ffcc;
       border: 1px solid #00ffcc;
     }
+
     button {
       background-color: #00ffcc;
       color: black;
       font-weight: bold;
       cursor: pointer;
+      transition: 0.3s;
     }
+
+    button:hover {
+      background-color: #00ccaa;
+      transform: scale(1.05);
+    }
+
     .result {
       margin-top: 20px;
       padding: 20px;
@@ -61,11 +75,27 @@
       border-radius: 10px;
       display: inline-block;
       max-width: 90%;
+      box-shadow: 0 0 10px #00ffcc;
     }
-    footer {
-      margin-top: 30px;
-      color: #888;
-      font-size: 14px;
+
+    .footer-credit {
+      margin-top: 40px;
+      padding: 10px;
+      border-top: 2px solid #00ffcc;
+      border-bottom: 2px solid #00ffcc;
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: rgba(0, 255, 204, 0.05);
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc inset;
+    }
+
+    .footer-credit .glow {
+      color: #00ffcc;
+      font-weight: bold;
+      text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc;
+      font-size: 16px;
     }
   </style>
 </head>
@@ -73,15 +103,17 @@
 
   <div class="cover"></div>
 
-  <h1>CTH Phone Tracker</h1>
+  <h1>CTH Nambar Information</h1>
   <p>Enter any Bangladeshi number (e.g. 017xxxxxxxx or +88017xxxxxxxx)</p>
   <input type="text" id="phone" placeholder="017xxxxxxx" />
   <br />
-  <button onclick="trackNumber()">Track Now</button>
+  <button onclick="trackNumber()"> Check Now</button>
 
   <div class="result" id="output"></div>
 
-  <footer>&copy; Powered by <b>SHADOW JOKER</b></footer>
+  <footer class="footer-credit">
+    <span class="glow"> Powered by <b>SHADOW JOKER</b></span>
+  </footer>
 
   <script>
     async function trackNumber() {
@@ -92,7 +124,12 @@
       let phone = input.startsWith("+") ? input : "+88" + input;
 
       try {
-        const res = await fetch(`/api/lookup?number=${encodeURIComponent(phone)}`);
+        const res = await fetch(`https://api.apilayer.com/number_verification/validate?number=${phone}`, {
+          headers: {
+            "apikey": "ym29bSVL4NH58ZSWPZQYo739Pr3fGgFz"
+          }
+        });
+
         const data = await res.json();
 
         if (!data.valid) {
@@ -100,13 +137,13 @@
           return;
         }
 
-        output.innerHTML = \`
-          <b>Number:</b> \${data.international_format}<br />
-          <b>Country:</b> \${data.country_name} (\${data.country_code})<br />
-          <b>Carrier:</b> \${data.carrier}<br />
-          <b>Line Type:</b> \${data.line_type}<br />
-          <b>Valid:</b> \${data.valid}
-        \`;
+        output.innerHTML = `
+          <b>Number:</b> ${data.international_format}<br />
+          <b>Country:</b> ${data.country_name} (${data.country_code})<br />
+          <b>Carrier:</b> ${data.carrier}<br />
+          <b>Line Type:</b> ${data.line_type}<br />
+          <b>Valid:</b> ${data.valid}
+        `;
       } catch (error) {
         output.innerHTML = "Error while fetching data.";
       }
